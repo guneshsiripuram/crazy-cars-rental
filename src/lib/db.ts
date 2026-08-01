@@ -5,6 +5,10 @@ import { Car, Booking, WebsiteSettings, GalleryItem } from './types';
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
 
+// Vercel serverless /tmp fallback
+const TMP_DATA_DIR = '/tmp';
+const TMP_DB_FILE = path.join(TMP_DATA_DIR, 'db.json');
+
 interface DatabaseSchema {
   cars: Car[];
   bookings: Booking[];
@@ -234,59 +238,88 @@ const INITIAL_BOOKINGS: Booking[] = [
   }
 ];
 
+// Global in-memory fallback for Vercel serverless
+let memoryDb: DatabaseSchema | null = null;
+
 function ensureDbExists(): DatabaseSchema {
-  const publicDir = path.join(process.cwd(), 'public');
-  const sourceImage = path.join(process.cwd(), 'images', 'Screenshot 2026-08-01 184412.png');
-  const destLogo = path.join(publicDir, 'logo.png');
-  const destCrazyLogo = path.join(publicDir, 'crazy-cars-logo.png');
+  if (memoryDb) {
+    return memoryDb;
+  }
+
+  const defaultData: DatabaseSchema = {
+    cars: INITIAL_CARS,
+    bookings: INITIAL_BOOKINGS,
+    settings: INITIAL_SETTINGS,
+    gallery: INITIAL_GALLERY,
+  };
 
   try {
+    const publicDir = path.join(process.cwd(), 'public');
+    const sourceImage = path.join(process.cwd(), 'images', 'Screenshot 2026-08-01 184412.png');
+    const destLogo = path.join(publicDir, 'logo.png');
+    const destCrazyLogo = path.join(publicDir, 'crazy-cars-logo.png');
+
     if (!fs.existsSync(publicDir)) {
       fs.mkdirSync(publicDir, { recursive: true });
     }
-    if (fs.existsSync(sourceImage)) {
+    if (fs.existsSync(sourceImage) && !fs.existsSync(destLogo)) {
       fs.copyFileSync(sourceImage, destLogo);
       fs.copyFileSync(sourceImage, destCrazyLogo);
     }
-  } catch (err) {
-    console.error('Logo sync error:', err);
-  }
-
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
-  }
-
-  if (!fs.existsSync(DB_FILE)) {
-    const data: DatabaseSchema = {
-      cars: INITIAL_CARS,
-      bookings: INITIAL_BOOKINGS,
-      settings: INITIAL_SETTINGS,
-      gallery: INITIAL_GALLERY,
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    return data;
-  }
-
-  try {
-    const raw = fs.readFileSync(DB_FILE, 'utf-8');
-    return JSON.parse(raw);
   } catch {
-    const data: DatabaseSchema = {
-      cars: INITIAL_CARS,
-      bookings: INITIAL_BOOKINGS,
-      settings: INITIAL_SETTINGS,
-      gallery: INITIAL_GALLERY,
-    };
-    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    return data;
+    // Ignore read-only filesystem on Vercel
   }
+
+  // Try reading primary DB file
+  try {
+    if (fs.existsSync(DB_FILE)) {
+      const raw = fs.readFileSync(DB_FILE, 'utf-8');
+      memoryDb = JSON.parse(raw);
+      return memoryDb!;
+    }
+  } catch {
+    // Read failed, try tmp
+  }
+
+  // Try reading Vercel /tmp DB file
+  try {
+    if (fs.existsSync(TMP_DB_FILE)) {
+      const raw = fs.readFileSync(TMP_DB_FILE, 'utf-8');
+      memoryDb = JSON.parse(raw);
+      return memoryDb!;
+    }
+  } catch {
+    // Tmp read failed
+  }
+
+  memoryDb = defaultData;
+  saveDb(defaultData);
+  return memoryDb;
 }
 
 function saveDb(data: DatabaseSchema) {
-  if (!fs.existsSync(DATA_DIR)) {
-    fs.mkdirSync(DATA_DIR, { recursive: true });
+  memoryDb = data;
+  
+  // Try writing to primary DB_FILE
+  try {
+    if (!fs.existsSync(DATA_DIR)) {
+      fs.mkdirSync(DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    return;
+  } catch {
+    // Primary write failed (e.g. read-only Vercel filesystem)
   }
-  fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+
+  // Fallback writing to Vercel /tmp/db.json
+  try {
+    if (!fs.existsSync(TMP_DATA_DIR)) {
+      fs.mkdirSync(TMP_DATA_DIR, { recursive: true });
+    }
+    fs.writeFileSync(TMP_DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
+  } catch {
+    // Tmp write failed, memoryDb is preserved
+  }
 }
 
 export const db = {
