@@ -3,8 +3,8 @@ import { NextResponse } from 'next/server';
 export async function POST(request: Request) {
   try {
     const { password } = await request.json();
-    // Default admin password 'admin123'
-    if (password === 'admin123' || password === 'crazycars2026') {
+    // Admin password set to 182026
+    if (password === '182026') {
       return NextResponse.json({ success: true, token: 'crazy-cars-admin-token-2026' });
     }
     return NextResponse.json({ success: false, message: 'Invalid admin credentials' }, { status: 401 });

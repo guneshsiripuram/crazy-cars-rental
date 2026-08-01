@@ -110,7 +110,7 @@ export default function AdminDashboardPage() {
         setIsAuthenticated(true);
         fetchAllData();
       } else {
-        setAuthError('Invalid Admin Password. (Default: admin123)');
+        setAuthError('Invalid Admin Password.');
       }
     } catch {
       setAuthError('Authentication network error.');
@@ -343,7 +343,7 @@ export default function AdminDashboardPage() {
               <input
                 type="password"
                 required
-                placeholder="Enter admin password (Default: admin123)"
+                placeholder="Enter admin password"
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 className="w-full px-4 py-3 bg-slate-50 border border-border rounded-xl text-sm focus:ring-2 focus:ring-primary/20 focus:border-primary text-secondary"
