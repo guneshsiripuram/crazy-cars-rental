@@ -55,15 +55,15 @@ export default function WhyChooseUs() {
             return (
               <div
                 key={index}
-                className="bg-white rounded-2xl p-6 sm:p-7 border border-border shadow-card hover:shadow-card-hover transition-all duration-300 transform hover:-translate-y-1 flex flex-col justify-between group"
+                className="bg-white rounded-2xl p-6 sm:p-7 border-t-4 border-t-primary border-x border-b border-slate-200/80 shadow-[0_8px_30px_rgb(15,23,42,0.06)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.15)] transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group"
               >
                 <div>
                   {/* Icon & Badge Header */}
                   <div className="flex items-center justify-between mb-5">
-                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+                    <div className="w-12 h-12 rounded-xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-sm">
                       <Icon className="w-6 h-6 stroke-[2]" />
                     </div>
-                    <span className="text-[11px] font-semibold text-slate-500 bg-slate-100 px-2.5 py-1 rounded-md">
+                    <span className="text-[11px] font-bold text-primary bg-primary/10 border border-primary/20 px-2.5 py-1 rounded-md">
                       {feature.badge}
                     </span>
                   </div>
@@ -71,13 +71,13 @@ export default function WhyChooseUs() {
                   {/* Title with Checkmark */}
                   <div className="flex items-center gap-2 mb-3">
                     <CheckCircle2 className="w-5 h-5 text-success shrink-0" />
-                    <h3 className="text-lg font-bold text-secondary tracking-tight">
+                    <h3 className="text-lg font-extrabold text-secondary tracking-tight">
                       {feature.title}
                     </h3>
                   </div>
 
                   {/* Description */}
-                  <p className="text-sm text-slate-600 leading-relaxed">
+                  <p className="text-xs sm:text-sm text-slate-600 leading-relaxed font-medium">
                     {feature.description}
                   </p>
                 </div>

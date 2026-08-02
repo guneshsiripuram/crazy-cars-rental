@@ -61,7 +61,7 @@ export default function FleetSection({ cars, settings, onBookNow }: FleetSection
         </div>
 
         {/* Search & Filter Bar Controls */}
-        <div className="bg-card border border-border p-4 sm:p-6 rounded-2xl shadow-subtle mb-10 space-y-4">
+        <div className="bg-white border-t-4 border-t-primary border-x border-b border-slate-200/90 p-4 sm:p-6 rounded-2xl shadow-[0_10px_30px_rgb(15,23,42,0.08)] mb-10 space-y-4">
           
           {/* Top Search Bar */}
           <div className="relative">

@@ -35,7 +35,7 @@ export default function LocationSection({ settings }: LocationSectionProps) {
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
           
           {/* Left Address Card */}
-          <div className="lg:col-span-5 bg-card p-6 sm:p-8 rounded-3xl border border-border shadow-card flex flex-col justify-between space-y-6">
+          <div className="lg:col-span-5 bg-white p-6 sm:p-8 rounded-3xl border-t-4 border-t-primary border-x border-b border-slate-200/90 shadow-[0_10px_30px_rgb(15,23,42,0.08)] flex flex-col justify-between space-y-6">
             
             <div className="space-y-6">
               

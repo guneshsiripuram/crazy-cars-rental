@@ -34,15 +34,15 @@ export default function ContactSection({ settings, onOpenBookingModal }: Contact
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
           
           {/* Phone Call Card */}
-          <div className="bg-white p-7 rounded-3xl border border-border shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between group">
+          <div className="bg-white p-7 rounded-3xl border-t-4 border-t-primary border-x border-b border-slate-200/90 shadow-[0_8px_30px_rgb(15,23,42,0.06)] hover:shadow-[0_20px_40px_rgba(37,99,235,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-primary/10 text-primary flex items-center justify-center group-hover:bg-primary group-hover:text-white transition-colors duration-300 shadow-sm">
                 <Phone className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-wider">Direct Hotline</span>
-                <h3 className="text-xl font-extrabold text-secondary mt-1">Call Us Anytime</h3>
-                <p className="text-sm text-slate-600 mt-2">Instant vehicle booking confirmation & assistance.</p>
+                <span className="text-xs font-bold text-primary uppercase tracking-wider bg-primary/10 px-2.5 py-0.5 rounded-md">Direct Hotline</span>
+                <h3 className="text-xl font-extrabold text-secondary mt-2">Call Us Anytime</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">Instant vehicle booking confirmation & assistance.</p>
               </div>
             </div>
             <a
@@ -55,15 +55,15 @@ export default function ContactSection({ settings, onOpenBookingModal }: Contact
           </div>
 
           {/* WhatsApp Card */}
-          <div className="bg-white p-7 rounded-3xl border border-border shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between group">
+          <div className="bg-white p-7 rounded-3xl border-t-4 border-t-emerald-500 border-x border-b border-slate-200/90 shadow-[0_8px_30px_rgb(15,23,42,0.06)] hover:shadow-[0_20px_40px_rgba(34,197,94,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center group-hover:bg-emerald-600 group-hover:text-white transition-colors duration-300 shadow-sm">
                 <MessageCircle className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-bold text-emerald-600 uppercase tracking-wider">WhatsApp Support</span>
-                <h3 className="text-xl font-extrabold text-secondary mt-1">Chat on WhatsApp</h3>
-                <p className="text-sm text-slate-600 mt-2">Send car photo requests, rates, & identity proof.</p>
+                <span className="text-xs font-bold text-emerald-700 uppercase tracking-wider bg-emerald-50 border border-emerald-200 px-2.5 py-0.5 rounded-md">WhatsApp Support</span>
+                <h3 className="text-xl font-extrabold text-secondary mt-2">Chat on WhatsApp</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">Send car photo requests, rates, & identity proof.</p>
               </div>
             </div>
             <a
@@ -78,15 +78,15 @@ export default function ContactSection({ settings, onOpenBookingModal }: Contact
           </div>
 
           {/* Instagram Card */}
-          <div className="bg-white p-7 rounded-3xl border border-border shadow-card hover:shadow-card-hover transition-all duration-300 flex flex-col justify-between group">
+          <div className="bg-white p-7 rounded-3xl border-t-4 border-t-pink-500 border-x border-b border-slate-200/90 shadow-[0_8px_30px_rgb(15,23,42,0.06)] hover:shadow-[0_20px_40px_rgba(236,72,153,0.16)] transition-all duration-300 transform hover:-translate-y-1.5 flex flex-col justify-between group">
             <div className="space-y-4">
-              <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-600 group-hover:text-white transition-colors duration-300">
+              <div className="w-12 h-12 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center group-hover:bg-pink-600 group-hover:text-white transition-colors duration-300 shadow-sm">
                 <Instagram className="w-6 h-6" />
               </div>
               <div>
-                <span className="text-xs font-bold text-pink-600 uppercase tracking-wider">Follow Us</span>
-                <h3 className="text-xl font-extrabold text-secondary mt-1">Instagram Page</h3>
-                <p className="text-sm text-slate-600 mt-2">Check latest fleet videos, customer reviews, and offers.</p>
+                <span className="text-xs font-bold text-pink-700 uppercase tracking-wider bg-pink-50 border border-pink-200 px-2.5 py-0.5 rounded-md">Follow Us</span>
+                <h3 className="text-xl font-extrabold text-secondary mt-2">Instagram Page</h3>
+                <p className="text-xs sm:text-sm text-slate-600 mt-2 font-medium">Check latest fleet videos, customer reviews, and offers.</p>
               </div>
             </div>
             <a
