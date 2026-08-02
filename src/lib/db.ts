@@ -621,6 +621,36 @@ export const db = {
           localData.cars = mappedCars;
           saveDb(localData);
           return mappedCars;
+        } else if (!error && data && data.length === 0) {
+          // Table exists but is empty -> auto seed initial 17 official vehicles!
+          const payload = INITIAL_CARS.map(c => ({
+            id: c.id,
+            name: c.name,
+            brand: c.brand,
+            model: c.model,
+            type: c.type,
+            fuel: c.fuel,
+            transmission: c.transmission,
+            seats: c.seats,
+            mileage: c.mileage,
+            price_hour: c.priceHour,
+            price_day: c.priceDay,
+            price_12hr: c.price12hr || 1600,
+            price_24hr: c.price24hr || 2600,
+            km_limit_12hr: c.kmLimit12hr || 150,
+            km_limit_24hr: c.kmLimit24hr || 250,
+            excess_km_rate: c.excessKmRate || 6,
+            extra_hr_rate: c.extraHrRate || 170,
+            price_week: c.priceWeek,
+            price_month: c.priceMonth,
+            image: c.image,
+            status: c.status,
+            enabled: c.enabled,
+            featured: c.featured || false
+          }));
+
+          await supabase.from('cars').insert(payload);
+          return INITIAL_CARS;
         }
       } catch (err) {
         console.error('Supabase getCarsAsync error:', err);
