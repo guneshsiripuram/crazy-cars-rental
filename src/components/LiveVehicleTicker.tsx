@@ -11,21 +11,19 @@ interface LiveVehicleTickerProps {
 
 export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTickerProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const [isInteracting, setIsInteracting] = useState(false);
-  const interactionTimerRef = useRef<NodeJS.Timeout | null>(null);
+  const [isPaused, setIsPaused] = useState(false);
+  const pauseTimerRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Duplicate list for seamless infinite looping
+  // Triple array for infinite looping
   const displayCars = cars.length > 0 ? [...cars, ...cars, ...cars] : [];
 
+  // Auto-scroll effect that runs continuously on page load
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container || cars.length === 0) return;
+    if (cars.length === 0) return;
 
-    let animationFrameId: number;
-
-    const autoScroll = () => {
-      if (!isInteracting && container) {
-        // Continuous smooth scroll increment
+    const interval = setInterval(() => {
+      const container = scrollContainerRef.current;
+      if (!isPaused && container) {
         container.scrollLeft += 1.2;
 
         // Reset scroll position seamlessly when reaching half of the scroll width
@@ -34,41 +32,33 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
           container.scrollLeft = 0;
         }
       }
-      animationFrameId = requestAnimationFrame(autoScroll);
-    };
+    }, 20); // 50fps smooth scroll
 
-    animationFrameId = requestAnimationFrame(autoScroll);
+    return () => clearInterval(interval);
+  }, [isPaused, cars]);
 
-    return () => {
-      cancelAnimationFrame(animationFrameId);
-    };
-  }, [isInteracting, cars]);
-
-  // Handle user interaction (touch or drag) to temporarily pause auto-scroll
-  const handleUserInteraction = () => {
-    setIsInteracting(true);
-
-    if (interactionTimerRef.current) {
-      clearTimeout(interactionTimerRef.current);
-    }
-
-    // Resume smooth auto-scroll after 3 seconds of inactivity
-    interactionTimerRef.current = setTimeout(() => {
-      setIsInteracting(false);
-    }, 3000);
+  // Pause auto-scroll temporarily when user touches or swipes
+  const pauseAutoScroll = () => {
+    setIsPaused(true);
+    if (pauseTimerRef.current) clearTimeout(pauseTimerRef.current);
+    
+    // Resume auto-scroll after 3.5 seconds of user inactivity
+    pauseTimerRef.current = setTimeout(() => {
+      setIsPaused(false);
+    }, 3500);
   };
 
   if (cars.length === 0) return null;
 
   const scrollLeft = () => {
-    handleUserInteraction();
+    pauseAutoScroll();
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: -280, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
-    handleUserInteraction();
+    pauseAutoScroll();
     if (scrollContainerRef.current) {
       scrollContainerRef.current.scrollBy({ left: 280, behavior: 'smooth' });
     }
@@ -82,7 +72,7 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between gap-4 relative z-10">
         
-        {/* Header */}
+        {/* Live Header */}
         <div className="flex items-center gap-3">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -98,7 +88,7 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
           </div>
         </div>
 
-        {/* Arrow Buttons */}
+        {/* Desktop Arrow Controls */}
         <div className="flex items-center gap-2">
           <button
             onClick={scrollLeft}
@@ -125,14 +115,15 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
         <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
 
-        {/* Continuous Auto + Manual Swipe Container */}
+        {/* Continuous Auto + Manual Touch Swipe Container */}
         <div
           ref={scrollContainerRef}
-          onTouchStart={handleUserInteraction}
-          onTouchMove={handleUserInteraction}
-          onMouseDown={handleUserInteraction}
-          onWheel={handleUserInteraction}
-          onScroll={handleUserInteraction}
+          onTouchStart={pauseAutoScroll}
+          onTouchMove={pauseAutoScroll}
+          onMouseDown={pauseAutoScroll}
+          onMouseEnter={pauseAutoScroll}
+          onMouseLeave={() => setIsPaused(false)}
+          onWheel={pauseAutoScroll}
           className="flex gap-4 sm:gap-5 overflow-x-auto scrollbar-none px-4 sm:px-8 py-2 relative z-10 touch-pan-x cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
