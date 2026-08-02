@@ -14,7 +14,9 @@ export default function ContactSection({ settings, onOpenBookingModal }: Contact
   const instagramUrl = `https://instagram.com/${settings.instagram}`;
 
   return (
-    <section id="contact" className="py-16 md:py-24 bg-slate-50/60 border-t border-border">
+    <section id="contact" className="py-16 md:py-24 bg-slate-50/80 border-t border-slate-200/80 relative overflow-hidden">
+      {/* Background Subtle Dot Pattern */}
+      <div className="absolute inset-0 opacity-[0.4] bg-[radial-gradient(#cbd5e1_1px,transparent_1px)] [background-size:24px_24px] pointer-events-none" />
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
         {/* Section Header */}
