@@ -6,7 +6,7 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const gallery = db.getGallery();
+    const gallery = await db.getGalleryAsync();
     return NextResponse.json(
       { success: true, data: gallery },
       {
@@ -27,7 +27,7 @@ export async function POST(request: Request) {
     if (!title || !imageUrl) {
       return NextResponse.json({ success: false, message: 'Title and image URL required' }, { status: 400 });
     }
-    const newItem = db.addGalleryItem({
+    const newItem = await db.addGalleryItemAsync({
       title,
       category: category || 'Fleet',
       imageUrl
@@ -45,7 +45,7 @@ export async function DELETE(request: Request) {
     if (!id) {
       return NextResponse.json({ success: false, message: 'ID required' }, { status: 400 });
     }
-    const deleted = db.deleteGalleryItem(id);
+    const deleted = await db.deleteGalleryItemAsync(id);
     return NextResponse.json({ success: deleted, message: deleted ? 'Deleted' : 'Not found' });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Failed to delete gallery item' }, { status: 500 });

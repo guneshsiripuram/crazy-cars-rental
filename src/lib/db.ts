@@ -802,7 +802,217 @@ export const db = {
     return false;
   },
 
-  // Bookings
+  // Bookings Async (Supabase + Local fallback)
+  async getBookingsAsync(): Promise<Booking[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('bookings').select('*').order('created_at', { ascending: false });
+        if (!error && data) {
+          const mappedBookings: Booking[] = data.map(item => ({
+            id: item.id || `bk-${Date.now()}`,
+            customerName: item.customer_name || item.customerName || 'Customer',
+            phone: item.phone || '',
+            carId: item.car_id || item.carId || '',
+            carName: item.car_name || item.carName || 'Vehicle',
+            pickupDate: item.pickup_date || item.pickupDate || '',
+            returnDate: item.return_date || item.returnDate || '',
+            message: item.message || '',
+            status: (item.status as Booking['status']) || 'Pending',
+            createdAt: item.created_at || new Date().toISOString()
+          }));
+
+          const localData = ensureDbExists();
+          localData.bookings = mappedBookings;
+          saveDb(localData);
+          return mappedBookings;
+        }
+      } catch (err) {
+        console.error('Supabase getBookingsAsync error:', err);
+      }
+    }
+    return ensureDbExists().bookings;
+  },
+
+  async addBookingAsync(booking: Omit<Booking, 'id' | 'createdAt' | 'status'>): Promise<Booking> {
+    const newBooking: Booking = {
+      ...booking,
+      id: `bk-${Date.now()}`,
+      status: 'Pending',
+      createdAt: new Date().toISOString()
+    };
+
+    if (supabase) {
+      try {
+        await supabase.from('bookings').insert([{
+          id: newBooking.id,
+          customer_name: newBooking.customerName,
+          phone: newBooking.phone,
+          car_id: newBooking.carId,
+          car_name: newBooking.carName,
+          pickup_date: newBooking.pickupDate,
+          return_date: newBooking.returnDate,
+          message: newBooking.message || '',
+          status: newBooking.status,
+          created_at: newBooking.createdAt
+        }]);
+      } catch (err) {
+        console.error('Supabase addBookingAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    data.bookings.unshift(newBooking);
+    saveDb(data);
+    return newBooking;
+  },
+
+  async updateBookingStatusAsync(id: string, status: Booking['status']): Promise<Booking | null> {
+    if (supabase) {
+      try {
+        await supabase.from('bookings').update({ status }).eq('id', id);
+      } catch (err) {
+        console.error('Supabase updateBookingStatusAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    const booking = data.bookings.find(b => b.id === id);
+    if (booking) {
+      booking.status = status;
+      saveDb(data);
+      return booking;
+    }
+    return { id, status } as any;
+  },
+
+  // Settings Async (Supabase + Local fallback)
+  async getSettingsAsync(): Promise<WebsiteSettings> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('settings').select('*').eq('id', 'main').single();
+        if (!error && data) {
+          const mappedSettings: WebsiteSettings = {
+            phone: data.phone || INITIAL_SETTINGS.phone,
+            whatsapp: data.whatsapp || INITIAL_SETTINGS.whatsapp,
+            instagram: data.instagram || INITIAL_SETTINGS.instagram,
+            address: data.address || INITIAL_SETTINGS.address,
+            mapUrl: data.map_url || data.mapUrl || INITIAL_SETTINGS.mapUrl,
+            heroTitle: data.hero_title || data.heroTitle || INITIAL_SETTINGS.heroTitle,
+            heroSubtitle: data.hero_subtitle || data.heroSubtitle || INITIAL_SETTINGS.heroSubtitle,
+            heroIntro: data.hero_intro || data.heroIntro || INITIAL_SETTINGS.heroIntro,
+            footerText: data.footer_text || data.footerText || INITIAL_SETTINGS.footerText
+          };
+
+          const localData = ensureDbExists();
+          localData.settings = mappedSettings;
+          saveDb(localData);
+          return mappedSettings;
+        }
+      } catch (err) {
+        console.error('Supabase getSettingsAsync error:', err);
+      }
+    }
+    return ensureDbExists().settings;
+  },
+
+  async updateSettingsAsync(newSettings: Partial<WebsiteSettings>): Promise<WebsiteSettings> {
+    const current = ensureDbExists().settings;
+    const updated = { ...current, ...newSettings };
+
+    if (supabase) {
+      try {
+        await supabase.from('settings').upsert({
+          id: 'main',
+          phone: updated.phone,
+          whatsapp: updated.whatsapp,
+          instagram: updated.instagram,
+          address: updated.address,
+          map_url: updated.mapUrl,
+          hero_title: updated.heroTitle,
+          hero_subtitle: updated.heroSubtitle,
+          hero_intro: updated.heroIntro,
+          footer_text: updated.footerText
+        });
+      } catch (err) {
+        console.error('Supabase updateSettingsAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    data.settings = updated;
+    saveDb(data);
+    return updated;
+  },
+
+  // Gallery Async (Supabase + Local fallback)
+  async getGalleryAsync(): Promise<GalleryItem[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('gallery').select('*').order('created_at', { ascending: false });
+        if (!error && data) {
+          const mappedGallery: GalleryItem[] = data.map(item => ({
+            id: item.id || `gal-${Date.now()}`,
+            title: item.title,
+            category: item.category || 'Fleet',
+            imageUrl: item.image_url || item.imageUrl,
+            createdAt: item.created_at || new Date().toISOString().split('T')[0]
+          }));
+
+          const localData = ensureDbExists();
+          localData.gallery = mappedGallery;
+          saveDb(localData);
+          return mappedGallery;
+        }
+      } catch (err) {
+        console.error('Supabase getGalleryAsync error:', err);
+      }
+    }
+    return ensureDbExists().gallery;
+  },
+
+  async addGalleryItemAsync(item: Omit<GalleryItem, 'id' | 'createdAt'>): Promise<GalleryItem> {
+    const newItem: GalleryItem = {
+      ...item,
+      id: `gal-${Date.now()}`,
+      createdAt: new Date().toISOString().split('T')[0]
+    };
+
+    if (supabase) {
+      try {
+        await supabase.from('gallery').insert([{
+          id: newItem.id,
+          title: newItem.title,
+          category: newItem.category,
+          image_url: newItem.imageUrl,
+          created_at: newItem.createdAt
+        }]);
+      } catch (err) {
+        console.error('Supabase addGalleryItemAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    data.gallery.unshift(newItem);
+    saveDb(data);
+    return newItem;
+  },
+
+  async deleteGalleryItemAsync(id: string): Promise<boolean> {
+    if (supabase) {
+      try {
+        await supabase.from('gallery').delete().eq('id', id);
+      } catch (err) {
+        console.error('Supabase deleteGalleryItemAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    data.gallery = data.gallery.filter(g => g.id !== id);
+    saveDb(data);
+    return true;
+  },
+
+  // Synchronous Car fallbacks for backward compatibility
   getBookings(): Booking[] {
     return ensureDbExists().bookings;
   },
@@ -829,7 +1039,6 @@ export const db = {
     return booking;
   },
 
-  // Settings
   getSettings(): WebsiteSettings {
     return ensureDbExists().settings;
   },
@@ -841,7 +1050,6 @@ export const db = {
     return data.settings;
   },
 
-  // Gallery
   getGallery(): GalleryItem[] {
     return ensureDbExists().gallery;
   },
@@ -860,12 +1068,8 @@ export const db = {
 
   deleteGalleryItem(id: string): boolean {
     const data = ensureDbExists();
-    const initialLength = data.gallery.length;
     data.gallery = data.gallery.filter(g => g.id !== id);
-    if (data.gallery.length !== initialLength) {
-      saveDb(data);
-      return true;
-    }
-    return false;
+    saveDb(data);
+    return true;
   }
 };

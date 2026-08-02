@@ -211,7 +211,7 @@ export default function BookingModal({
                   onChange={handleCarChange}
                   className="w-full p-2.5 bg-slate-50 border border-border rounded-xl text-sm font-semibold text-secondary focus:ring-2 focus:ring-primary/20 focus:border-primary"
                 >
-                  {allCars.map((c) => (
+                  {allCars.filter(c => c.enabled && c.status === 'Available').map((c) => (
                     <option key={c.id} value={c.id}>
                       {c.name} ({c.type} - ₹{c.priceDay}/day)
                     </option>

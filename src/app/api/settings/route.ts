@@ -6,7 +6,7 @@ export const revalidate = 0;
 
 export async function GET() {
   try {
-    const settings = db.getSettings();
+    const settings = await db.getSettingsAsync();
     return NextResponse.json(
       { success: true, data: settings },
       {
@@ -23,7 +23,7 @@ export async function GET() {
 export async function PUT(request: Request) {
   try {
     const body = await request.json();
-    const updated = db.updateSettings(body);
+    const updated = await db.updateSettingsAsync(body);
     return NextResponse.json({ success: true, data: updated });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Failed to update settings' }, { status: 500 });

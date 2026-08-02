@@ -87,6 +87,12 @@ export default function AdminDashboardPage() {
     if (token === 'crazy-cars-admin-token-2026') {
       setIsAuthenticated(true);
       fetchAllData();
+
+      // Auto refresh every 15 seconds for live enquiries
+      const interval = setInterval(() => {
+        fetchAllData();
+      }, 15000);
+      return () => clearInterval(interval);
     }
   }, []);
 

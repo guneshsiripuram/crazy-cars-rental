@@ -1,13 +1,13 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { supabase } from '@/lib/supabase';
+import { Booking } from '@/lib/types';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
 export async function GET() {
   try {
-    const bookings = db.getBookings();
+    const bookings = await db.getBookingsAsync();
     return NextResponse.json(
       { success: true, data: bookings },
       {
@@ -30,7 +30,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ success: false, message: 'Missing required booking details' }, { status: 400 });
     }
 
-    const newBooking = db.addBooking({
+    const newBooking = await db.addBookingAsync({
       customerName,
       phone,
       carId: carId || '',
@@ -40,30 +40,13 @@ export async function POST(request: Request) {
       message: message || ''
     });
 
-    if (supabase) {
-      try {
-        await supabase.from('bookings').insert([{
-          customer_name: customerName,
-          phone,
-          car_id: carId || '',
-          car_name: carName,
-          pickup_date: pickupDate || '',
-          return_date: returnDate || '',
-          message: message || '',
-          status: 'Pending'
-        }]);
-      } catch (err) {
-        console.error('Supabase booking insert error:', err);
-      }
-    }
-
     return NextResponse.json({ success: true, data: newBooking }, { status: 201 });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Failed to submit booking request' }, { status: 400 });
   }
 }
 
-export async function PUT(request: Request) {
+async function updateBookingHandler(request: Request) {
   try {
     const body = await request.json();
     const { id, status } = body;
@@ -72,21 +55,21 @@ export async function PUT(request: Request) {
       return NextResponse.json({ success: false, message: 'Booking ID and status are required' }, { status: 400 });
     }
 
-    const updatedBooking = db.updateBookingStatus(id, status);
+    const updatedBooking = await db.updateBookingStatusAsync(id, status as Booking['status']);
     if (!updatedBooking) {
       return NextResponse.json({ success: false, message: 'Booking not found' }, { status: 404 });
-    }
-
-    if (supabase) {
-      try {
-        await supabase.from('bookings').update({ status }).eq('id', id);
-      } catch (err) {
-        console.error('Supabase update booking error:', err);
-      }
     }
 
     return NextResponse.json({ success: true, data: updatedBooking });
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Failed to update booking status' }, { status: 400 });
   }
+}
+
+export async function PUT(request: Request) {
+  return updateBookingHandler(request);
+}
+
+export async function PATCH(request: Request) {
+  return updateBookingHandler(request);
 }
