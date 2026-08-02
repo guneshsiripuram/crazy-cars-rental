@@ -1,8 +1,8 @@
 'use client';
 
-import React, { useRef } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { Car } from '@/lib/types';
-import { Fuel, Settings2, ArrowRight, CalendarCheck2, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Fuel, Settings2, ArrowRight, ChevronLeft, ChevronRight } from 'lucide-react';
 
 interface LiveVehicleTickerProps {
   cars: Car[];
@@ -11,30 +11,78 @@ interface LiveVehicleTickerProps {
 
 export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTickerProps) {
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const [isInteracting, setIsInteracting] = useState(false);
+  const interactionTimerRef = useRef<NodeJS.Timeout | null>(null);
+
+  // Duplicate list for seamless infinite looping
+  const displayCars = cars.length > 0 ? [...cars, ...cars, ...cars] : [];
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container || cars.length === 0) return;
+
+    let animationFrameId: number;
+
+    const autoScroll = () => {
+      if (!isInteracting && container) {
+        // Continuous smooth scroll increment
+        container.scrollLeft += 1.2;
+
+        // Reset scroll position seamlessly when reaching half of the scroll width
+        const maxScroll = container.scrollWidth / 2;
+        if (container.scrollLeft >= maxScroll) {
+          container.scrollLeft = 0;
+        }
+      }
+      animationFrameId = requestAnimationFrame(autoScroll);
+    };
+
+    animationFrameId = requestAnimationFrame(autoScroll);
+
+    return () => {
+      cancelAnimationFrame(animationFrameId);
+    };
+  }, [isInteracting, cars]);
+
+  // Handle user interaction (touch or drag) to temporarily pause auto-scroll
+  const handleUserInteraction = () => {
+    setIsInteracting(true);
+
+    if (interactionTimerRef.current) {
+      clearTimeout(interactionTimerRef.current);
+    }
+
+    // Resume smooth auto-scroll after 3 seconds of inactivity
+    interactionTimerRef.current = setTimeout(() => {
+      setIsInteracting(false);
+    }, 3000);
+  };
 
   if (cars.length === 0) return null;
 
   const scrollLeft = () => {
+    handleUserInteraction();
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: -300, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: -280, behavior: 'smooth' });
     }
   };
 
   const scrollRight = () => {
+    handleUserInteraction();
     if (scrollContainerRef.current) {
-      scrollContainerRef.current.scrollBy({ left: 300, behavior: 'smooth' });
+      scrollContainerRef.current.scrollBy({ left: 280, behavior: 'smooth' });
     }
   };
 
   return (
-    <section className="py-8 bg-slate-900 text-white relative border-y border-slate-800 shadow-2xl">
+    <section className="py-7 bg-slate-900 text-white relative border-y border-slate-800 shadow-2xl overflow-hidden">
       
-      {/* Background Pattern */}
+      {/* Background Subtle Grid */}
       <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#2563EB_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-5 flex items-center justify-between gap-4 relative z-10">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between gap-4 relative z-10">
         
-        {/* Title */}
+        {/* Header */}
         <div className="flex items-center gap-3">
           <span className="relative flex h-3 w-3">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
@@ -44,27 +92,27 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
             <span className="text-[11px] font-extrabold uppercase tracking-widest text-blue-400">
               Live Fleet Preview
             </span>
-            <h3 className="text-lg sm:text-2xl font-black text-white tracking-tight leading-tight">
-              Swipe & Explore Vehicles Ready For Instant Rent
+            <h3 className="text-base sm:text-xl font-black text-white tracking-tight leading-tight">
+              Auto-Live Vehicles • Swipe to Explore
             </h3>
           </div>
         </div>
 
-        {/* Mobile / Laptop Scroll Arrow Controls */}
+        {/* Arrow Buttons */}
         <div className="flex items-center gap-2">
           <button
             onClick={scrollLeft}
             aria-label="Scroll left"
-            className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-primary text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition-all shadow-md active:scale-95"
+            className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-primary text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition-all shadow-md active:scale-95"
           >
-            <ChevronLeft className="w-5 h-5" />
+            <ChevronLeft className="w-4 h-4" />
           </button>
           <button
             onClick={scrollRight}
             aria-label="Scroll right"
-            className="w-9 h-9 rounded-xl bg-slate-800 hover:bg-primary text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition-all shadow-md active:scale-95"
+            className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-primary text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition-all shadow-md active:scale-95"
           >
-            <ChevronRight className="w-5 h-5" />
+            <ChevronRight className="w-4 h-4" />
           </button>
         </div>
 
@@ -73,29 +121,34 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
       {/* Swipeable & Auto-scrolling Track */}
       <div className="relative w-full">
         
-        {/* Left / Right Smooth Gradient Fades */}
+        {/* Left & Right Smooth Edge Gradient Fades */}
         <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
         <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
 
-        {/* Touch Pan / Swipeable Container */}
+        {/* Continuous Auto + Manual Swipe Container */}
         <div
           ref={scrollContainerRef}
-          className="flex gap-4 sm:gap-6 overflow-x-auto scrollbar-none snap-x snap-mandatory px-4 sm:px-8 py-2 relative z-10 scroll-smooth touch-pan-x"
+          onTouchStart={handleUserInteraction}
+          onTouchMove={handleUserInteraction}
+          onMouseDown={handleUserInteraction}
+          onWheel={handleUserInteraction}
+          onScroll={handleUserInteraction}
+          className="flex gap-4 sm:gap-5 overflow-x-auto scrollbar-none px-4 sm:px-8 py-2 relative z-10 touch-pan-x cursor-grab active:cursor-grabbing"
           style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
         >
-          {cars.map((car) => (
+          {displayCars.map((car, index) => (
             <div
-              key={car.id}
+              key={`${car.id}-${index}`}
               onClick={() => onSelectCar(car)}
-              className="w-64 sm:w-72 shrink-0 snap-start bg-white text-slate-900 rounded-2xl border-t-4 border-t-primary border-x border-b border-slate-200 shadow-xl hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1.5 cursor-pointer flex flex-col justify-between group overflow-hidden"
+              className="w-64 sm:w-72 shrink-0 bg-white text-slate-900 rounded-2xl border-t-4 border-t-primary border-x border-b border-slate-200 shadow-lg hover:shadow-2xl transition-all duration-300 transform hover:-translate-y-1 cursor-pointer flex flex-col justify-between group overflow-hidden select-none"
             >
               <div>
-                {/* Car Image Banner */}
+                {/* Car Image Header */}
                 <div className="relative h-36 sm:h-40 w-full overflow-hidden bg-slate-100">
                   <img
                     src={car.image}
                     alt={car.name}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 pointer-events-none"
                   />
                   <div className="absolute top-2 left-2">
                     <span className={`px-2.5 py-0.5 rounded-full text-[10px] font-extrabold uppercase shadow-sm ${
