@@ -720,6 +720,8 @@ export const db = {
         if (updates.priceDay !== undefined) payload.price_day = updates.priceDay;
         if (updates.price12hr !== undefined) payload.price_12hr = updates.price12hr;
         if (updates.price24hr !== undefined) payload.price_24hr = updates.price24hr;
+        if (updates.kmLimit12hr !== undefined) payload.km_limit_12hr = updates.kmLimit12hr;
+        if (updates.kmLimit24hr !== undefined) payload.km_limit_24hr = updates.kmLimit24hr;
         if (updates.excessKmRate !== undefined) payload.excess_km_rate = updates.excessKmRate;
         if (updates.extraHrRate !== undefined) payload.extra_hr_rate = updates.extraHrRate;
         if (updates.priceWeek !== undefined) payload.price_week = updates.priceWeek;
