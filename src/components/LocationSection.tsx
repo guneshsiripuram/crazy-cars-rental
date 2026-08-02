@@ -9,7 +9,11 @@ interface LocationSectionProps {
 }
 
 export default function LocationSection({ settings }: LocationSectionProps) {
-  const mapDirectionsUrl = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent('Mulagada Housing Colony, Gajuwaka Bus Depot Road, Near Hanuman Temple, Opposite MRO Office, Gajuwaka, Visakhapatnam, Andhra Pradesh 530026')}`;
+  const mapDirectionsUrl = settings.mapUrl?.includes('google.com/maps/place')
+    ? settings.mapUrl
+    : 'https://www.google.com/maps/place/Crazy+cars+self+drive+rental/@17.6876529,83.2201184,946m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3a3969e620d16e49:0xd6f2a48922d19ec7!8m2!3d17.687653!4d83.2249893!16s%2Fg%2F11n4tbmjy9?entry=ttu';
+
+  const embedUrl = 'https://maps.google.com/maps?q=17.687653,83.2249893&z=17&output=embed';
 
   return (
     <section id="location" className="py-16 md:py-24 bg-white border-t border-border">
@@ -102,7 +106,7 @@ export default function LocationSection({ settings }: LocationSectionProps) {
           <div className="lg:col-span-7 rounded-3xl overflow-hidden border border-border shadow-card min-h-[380px] bg-slate-100 relative">
             <iframe
               title="Crazy Cars Self Drive Rental Gajuwaka Visakhapatnam Map"
-              src={settings.mapUrl || 'https://maps.google.com/maps?q=17.6974,83.2100&z=15&output=embed'}
+              src={settings.mapUrl?.includes('output=embed') ? settings.mapUrl : embedUrl}
               width="100%"
               height="100%"
               style={{ border: 0, minHeight: '400px' }}

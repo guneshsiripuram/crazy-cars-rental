@@ -173,7 +173,7 @@ const INITIAL_SETTINGS: WebsiteSettings = {
   whatsapp: '7337422124',
   instagram: 'crazy_cars_self_drive_rental_',
   address: 'Mulagada Housing Colony, Gajuwaka Bus Depot Road, Near Hanuman Temple, Opposite MRO Office, Gajuwaka, Visakhapatnam, AP 530026',
-  mapUrl: 'https://maps.google.com/maps?q=17.6974,83.2100&z=15&output=embed',
+  mapUrl: 'https://www.google.com/maps/place/Crazy+cars+self+drive+rental/@17.6876529,83.2201184,946m/data=!3m2!1e3!4b1!4m6!3m5!1s0x3a3969e620d16e49:0xd6f2a48922d19ec7!8m2!3d17.687653!4d83.2249893!16s%2Fg%2F11n4tbmjy9?entry=ttu',
   heroTitle: 'Drive Your Dream Car Today',
   heroSubtitle: 'Reliable Self Drive Car Rental in Visakhapatnam',
   heroIntro: 'Premium self-drive car rental service providing clean, well-maintained, affordable cars for daily, weekly, monthly and hourly rentals with zero hidden charges.',
