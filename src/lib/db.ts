@@ -511,6 +511,35 @@ function ensureDbExists(): DatabaseSchema {
     return memoryDb;
   }
 
+  // 1. Try reading from Vercel /tmp/db.json
+  try {
+    if (fs.existsSync(TMP_DB_FILE)) {
+      const raw = fs.readFileSync(TMP_DB_FILE, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.cars) && parsed.cars.length > 0) {
+        memoryDb = parsed;
+        return memoryDb!;
+      }
+    }
+  } catch {
+    // Tmp read failed
+  }
+
+  // 2. Try reading primary DB_FILE
+  try {
+    if (fs.existsSync(DB_FILE)) {
+      const raw = fs.readFileSync(DB_FILE, 'utf-8');
+      const parsed = JSON.parse(raw);
+      if (parsed && Array.isArray(parsed.cars) && parsed.cars.length > 0) {
+        memoryDb = parsed;
+        return memoryDb!;
+      }
+    }
+  } catch {
+    // Primary read failed
+  }
+
+  // 3. Fallback to default initial data
   const defaultData: DatabaseSchema = {
     cars: INITIAL_CARS,
     bookings: INITIAL_BOOKINGS,
@@ -518,24 +547,6 @@ function ensureDbExists(): DatabaseSchema {
     gallery: INITIAL_GALLERY,
   };
 
-  try {
-    const publicDir = path.join(process.cwd(), 'public');
-    const sourceImage = path.join(process.cwd(), 'images', 'Screenshot 2026-08-01 184412.png');
-    const destLogo = path.join(publicDir, 'logo.png');
-    const destCrazyLogo = path.join(publicDir, 'crazy-cars-logo.png');
-
-    if (!fs.existsSync(publicDir)) {
-      fs.mkdirSync(publicDir, { recursive: true });
-    }
-    if (fs.existsSync(sourceImage) && !fs.existsSync(destLogo)) {
-      fs.copyFileSync(sourceImage, destLogo);
-      fs.copyFileSync(sourceImage, destCrazyLogo);
-    }
-  } catch {
-    // Ignore read-only filesystem on Vercel
-  }
-
-  // Always force INITIAL_CARS if db.json contains older schema
   memoryDb = defaultData;
   saveDb(defaultData);
   return memoryDb;

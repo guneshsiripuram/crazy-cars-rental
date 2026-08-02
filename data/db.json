@@ -415,32 +415,7 @@
       "featured": true
     }
   ],
-  "bookings": [
-    {
-      "id": "bk-101",
-      "customerName": "Rahul Verma",
-      "phone": "9876543210",
-      "carId": "car-crysta",
-      "carName": "Toyota Innova Crysta",
-      "pickupDate": "2026-08-05",
-      "returnDate": "2026-08-08",
-      "message": "Need the car for a family trip to Araku Valley.",
-      "status": "Approved",
-      "createdAt": "2026-08-02T13:42:48.605Z"
-    },
-    {
-      "id": "bk-102",
-      "customerName": "Suresh Kumar",
-      "phone": "9123456789",
-      "carId": "car-i20",
-      "carName": "Hyundai i20",
-      "pickupDate": "2026-08-02",
-      "returnDate": "2026-08-04",
-      "message": "Local city ride around Vizag.",
-      "status": "Pending",
-      "createdAt": "2026-08-02T13:42:48.606Z"
-    }
-  ],
+  "bookings": [],
   "settings": {
     "phone": "7337422124",
     "whatsapp": "7337422124",
@@ -452,34 +427,5 @@
     "heroIntro": "Premium self-drive car rental service providing clean, well-maintained, affordable cars for daily, weekly, monthly and hourly rentals with zero hidden charges.",
     "footerText": "© Crazy Cars Self Drive Rental. All rights reserved. Premium Self-Drive Rental Services in Visakhapatnam."
   },
-  "gallery": [
-    {
-      "id": "gal-1",
-      "title": "Thar 4x4 Offroad Ready",
-      "category": "Fleet",
-      "imageUrl": "https://images.unsplash.com/photo-1533473359331-0135ef1b58bf?q=80&w=1200&auto=format&fit=crop",
-      "createdAt": "2026-07-01"
-    },
-    {
-      "id": "gal-2",
-      "title": "Fortuner Luxury Interior",
-      "category": "Interior",
-      "imageUrl": "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop",
-      "createdAt": "2026-07-05"
-    },
-    {
-      "id": "gal-3",
-      "title": "Hyundai Creta Metallic Finish",
-      "category": "Exterior",
-      "imageUrl": "https://images.unsplash.com/photo-1563720223185-11003d516935?q=80&w=1200&auto=format&fit=crop",
-      "createdAt": "2026-07-10"
-    },
-    {
-      "id": "gal-4",
-      "title": "Clean Sanitized Cabin",
-      "category": "Interior",
-      "imageUrl": "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1200&auto=format&fit=crop",
-      "createdAt": "2026-07-15"
-    }
-  ]
+  "gallery": []
 }
