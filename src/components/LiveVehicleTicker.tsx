@@ -65,24 +65,24 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
   };
 
   return (
-    <section className="pt-24 sm:pt-28 pb-7 bg-slate-900 text-white relative border-b border-slate-800 shadow-2xl overflow-hidden">
+    <section className="pt-24 sm:pt-28 pb-8 bg-gradient-to-r from-blue-950 via-slate-900 to-indigo-950 text-white relative border-b-2 border-primary/40 shadow-2xl overflow-hidden">
       
-      {/* Background Subtle Grid */}
-      <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#2563EB_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />
+      {/* Background Subtle Glowing Grid */}
+      <div className="absolute inset-0 opacity-20 bg-[radial-gradient(#60a5fa_1.5px,transparent_1.5px)] [background-size:24px_24px] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mb-4 flex items-center justify-between gap-4 relative z-10">
         
         {/* Live Header */}
         <div className="flex items-center gap-3">
-          <span className="relative flex h-3 w-3">
+          <span className="relative flex h-3.5 w-3.5">
             <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-            <span className="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>
+            <span className="relative inline-flex rounded-full h-3.5 w-3.5 bg-emerald-500 shadow-[0_0_10px_#10b981]"></span>
           </span>
           <div>
-            <span className="text-[11px] font-extrabold uppercase tracking-widest text-blue-400">
+            <span className="text-[11px] font-extrabold uppercase tracking-widest text-blue-400 bg-blue-500/10 px-2.5 py-0.5 rounded-full border border-blue-400/20">
               Live Fleet Preview
             </span>
-            <h3 className="text-base sm:text-xl font-black text-white tracking-tight leading-tight">
+            <h3 className="text-base sm:text-xl font-black text-white tracking-tight leading-tight mt-1">
               Auto-Live Vehicles • Swipe to Explore
             </h3>
           </div>
@@ -93,16 +93,16 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
           <button
             onClick={scrollLeft}
             aria-label="Scroll left"
-            className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-primary text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition-all shadow-md active:scale-95"
+            className="w-9 h-9 rounded-xl bg-white/10 hover:bg-primary text-white border border-white/20 flex items-center justify-center transition-all shadow-md active:scale-95 backdrop-blur-md"
           >
-            <ChevronLeft className="w-4 h-4" />
+            <ChevronLeft className="w-5 h-5" />
           </button>
           <button
             onClick={scrollRight}
             aria-label="Scroll right"
-            className="w-8 h-8 rounded-xl bg-slate-800 hover:bg-primary text-slate-300 hover:text-white border border-slate-700 flex items-center justify-center transition-all shadow-md active:scale-95"
+            className="w-9 h-9 rounded-xl bg-white/10 hover:bg-primary text-white border border-white/20 flex items-center justify-center transition-all shadow-md active:scale-95 backdrop-blur-md"
           >
-            <ChevronRight className="w-4 h-4" />
+            <ChevronRight className="w-5 h-5" />
           </button>
         </div>
 
@@ -112,8 +112,8 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
       <div className="relative w-full">
         
         {/* Left & Right Smooth Edge Gradient Fades */}
-        <div className="absolute left-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-r from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
-        <div className="absolute right-0 top-0 bottom-0 w-8 sm:w-16 bg-gradient-to-l from-slate-900 via-slate-900/80 to-transparent z-20 pointer-events-none" />
+        <div className="absolute left-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-r from-blue-950 via-blue-950/80 to-transparent z-20 pointer-events-none" />
+        <div className="absolute right-0 top-0 bottom-0 w-10 sm:w-20 bg-gradient-to-l from-indigo-950 via-indigo-950/80 to-transparent z-20 pointer-events-none" />
 
         {/* Continuous Auto + Manual Touch Swipe Container */}
         <div
