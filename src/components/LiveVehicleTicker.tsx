@@ -153,10 +153,10 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
                   </div>
                   <div className="absolute bottom-2 left-2 right-2 flex justify-between items-end text-white">
                     <span className="bg-slate-950/85 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20 text-xs font-black drop-shadow">
-                      ₹{car.priceDay.toLocaleString('en-IN')}<span className="text-[10px] font-normal text-slate-200">/day</span>
+                      12h: ₹{(car.price12hr || car.priceHour * 12).toLocaleString('en-IN')}
                     </span>
-                    <span className="bg-primary/90 text-white px-2 py-0.5 rounded-md text-[10px] font-bold">
-                      ₹{car.priceHour}/hr
+                    <span className="bg-primary/90 text-white px-2.5 py-1 rounded-lg text-xs font-black border border-white/20 shadow">
+                      24h: ₹{(car.price24hr || car.priceDay).toLocaleString('en-IN')}
                     </span>
                   </div>
                 </div>

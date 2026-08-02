@@ -17,6 +17,12 @@ export interface Car {
   priceDay: number;
   priceWeek: number;
   priceMonth: number;
+  price12hr?: number;
+  price24hr?: number;
+  kmLimit12hr?: number;
+  kmLimit24hr?: number;
+  excessKmRate?: number;
+  extraHrRate?: number;
   image: string;
   status: CarStatus;
   enabled: boolean;
@@ -53,7 +59,7 @@ export interface WebsiteSettings {
 export interface GalleryItem {
   id: string;
   title: string;
-  category: 'Exterior' | 'Interior' | 'Fleet';
+  category: string;
   imageUrl: string;
   createdAt: string;
 }

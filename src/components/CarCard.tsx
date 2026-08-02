@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { Car } from '@/lib/types';
-import { Fuel, Gauge, Users, Settings2, MessageCircle, Phone, CalendarCheck2, Clock } from 'lucide-react';
+import { Fuel, Gauge, Users, Settings2, MessageCircle, Phone, CalendarCheck2, Compass } from 'lucide-react';
 
 interface CarCardProps {
   car: Car;
@@ -14,10 +14,17 @@ interface CarCardProps {
 export default function CarCard({ car, whatsappNumber, phoneNumber, onBookNow }: CarCardProps) {
   const isAvailable = car.status === 'Available';
   const isBooked = car.status === 'Booked';
-  const isInService = car.status === 'In Service';
+
+  const price12 = car.price12hr || (car.priceHour * 12);
+  const price24 = car.price24hr || car.priceDay;
+  const km12 = car.kmLimit12hr || 150;
+  const km24 = car.kmLimit24hr || 250;
+  const excessKm = car.excessKmRate || 6;
+  const extraHr = car.extraHrRate || 170;
+  const ghatCharge = car.seats >= 7 ? 700 : 500;
 
   const whatsappMessage = encodeURIComponent(
-    `Hello Crazy Cars! I want to inquire about renting the ${car.name} (${car.fuel}, ${car.transmission}). Please share availability details.`
+    `Hello Crazy Cars! I want to inquire about renting the ${car.name} (12 Hrs: ₹${price12}, 24 Hrs: ₹${price24}). Please share availability.`
   );
   const whatsappUrl = `https://wa.me/91${whatsappNumber}?text=${whatsappMessage}`;
 
@@ -34,7 +41,7 @@ export default function CarCard({ car, whatsappNumber, phoneNumber, onBookNow }:
             alt={car.name}
             className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-500"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/10 to-transparent opacity-80" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent opacity-90" />
 
           {/* Status Badge */}
           <div className="absolute top-3 left-3">
@@ -56,15 +63,19 @@ export default function CarCard({ car, whatsappNumber, phoneNumber, onBookNow }:
             </span>
           </div>
 
-          {/* Price Highlight Banner */}
+          {/* Price Highlight Banner (12 HRS & 24 HRS) */}
           <div className="absolute bottom-3 left-3 right-3 flex justify-between items-end text-white">
             <div>
-              <p className="text-[10px] uppercase font-bold text-slate-300 tracking-wider">Daily Rate</p>
-              <p className="text-xl font-black tracking-tight text-white drop-shadow-sm">₹{car.priceDay.toLocaleString('en-IN')} <span className="text-xs font-normal text-slate-200">/day</span></p>
+              <p className="text-[10px] uppercase font-bold text-blue-300 tracking-wider">12 HRS ({km12} KM)</p>
+              <p className="text-xl font-black tracking-tight text-white drop-shadow-sm">
+                ₹{price12.toLocaleString('en-IN')}
+              </p>
             </div>
-            <div className="text-right bg-black/40 backdrop-blur-md px-2.5 py-1 rounded-lg border border-white/20">
-              <p className="text-[9px] uppercase font-bold text-slate-300">Hourly Rate</p>
-              <p className="text-xs font-bold text-white">₹{car.priceHour} /hr</p>
+            <div className="text-right bg-primary/90 backdrop-blur-md px-3 py-1 rounded-xl border border-white/20 shadow-md">
+              <p className="text-[9px] uppercase font-bold text-blue-100">24 HRS ({km24} KM)</p>
+              <p className="text-sm font-black text-white">
+                ₹{price24.toLocaleString('en-IN')}
+              </p>
             </div>
           </div>
         </div>
@@ -101,16 +112,30 @@ export default function CarCard({ car, whatsappNumber, phoneNumber, onBookNow }:
             </div>
           </div>
 
-          {/* Rental Pricing Grid Breakdown */}
-          <div className="bg-blue-50/70 p-3 rounded-xl border border-blue-100 space-y-1.5 text-xs font-semibold">
-            <div className="flex justify-between items-center text-slate-600">
-              <span>Weekly Pack:</span>
-              <span className="font-extrabold text-secondary">₹{car.priceWeek.toLocaleString('en-IN')}</span>
+          {/* Official Rental Rates Breakdown */}
+          <div className="bg-blue-50/70 p-3.5 rounded-xl border border-blue-100 space-y-2 text-xs font-semibold">
+            <div className="flex justify-between items-center text-slate-700 border-b border-blue-200/60 pb-1.5">
+              <span>12 Hours Limit ({km12} KM):</span>
+              <span className="font-extrabold text-secondary text-sm">₹{price12.toLocaleString('en-IN')}</span>
             </div>
-            <div className="flex justify-between items-center text-slate-600">
-              <span>Monthly Pack:</span>
-              <span className="font-extrabold text-primary">₹{car.priceMonth.toLocaleString('en-IN')}</span>
+            <div className="flex justify-between items-center text-slate-700 border-b border-blue-200/60 pb-1.5">
+              <span>24 Hours Limit ({km24} KM):</span>
+              <span className="font-extrabold text-primary text-sm">₹{price24.toLocaleString('en-IN')}</span>
             </div>
+            <div className="flex justify-between items-center text-slate-600 text-[11px]">
+              <span>Excess KM Charge:</span>
+              <span className="font-bold text-slate-900">₹{excessKm} / km</span>
+            </div>
+            <div className="flex justify-between items-center text-slate-600 text-[11px]">
+              <span>Extra Hour Charge:</span>
+              <span className="font-bold text-slate-900">₹{extraHr} / hr</span>
+            </div>
+          </div>
+
+          {/* Ghat Road Charge Note */}
+          <div className="p-2.5 bg-amber-50 rounded-xl border border-amber-200/80 flex items-center gap-2 text-[11px] text-amber-900 font-semibold">
+            <Compass className="w-4 h-4 text-amber-600 shrink-0" />
+            <span>Ghat Road Charges: ₹{ghatCharge}/day ({car.seats} Seater)</span>
           </div>
 
         </div>
@@ -148,7 +173,7 @@ export default function CarCard({ car, whatsappNumber, phoneNumber, onBookNow }:
           }`}
         >
           <CalendarCheck2 className="w-4 h-4" />
-          <span>{isAvailable && car.enabled ? 'Send Enquiry Form' : car.status}</span>
+          <span>{isAvailable && car.enabled ? 'Send Booking Enquiry' : car.status}</span>
         </button>
       </div>
 
