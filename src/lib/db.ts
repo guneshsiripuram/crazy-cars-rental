@@ -587,7 +587,7 @@ export const db = {
   async getCarsAsync(): Promise<Car[]> {
     if (supabase) {
       try {
-        const { data, error } = await supabase.from('cars').select('*');
+        const { data, error } = await supabase.from('cars').select('*').order('created_at', { ascending: false });
         if (!error && data && data.length > 0) {
           // Map DB columns to Car type
           const mappedCars: Car[] = data.map(item => ({
@@ -705,13 +705,6 @@ export const db = {
   },
 
   async updateCarAsync(id: string, updates: Partial<Car>): Promise<Car | null> {
-    const data = ensureDbExists();
-    const index = data.cars.findIndex(c => c.id === id);
-    if (index === -1) return null;
-
-    data.cars[index] = { ...data.cars[index], ...updates };
-    const updatedCar = data.cars[index];
-
     if (supabase) {
       try {
         const payload: Record<string, any> = {};
@@ -742,8 +735,15 @@ export const db = {
       }
     }
 
-    saveDb(data);
-    return updatedCar;
+    const data = ensureDbExists();
+    const index = data.cars.findIndex(c => c.id === id);
+    if (index !== -1) {
+      data.cars[index] = { ...data.cars[index], ...updates };
+      saveDb(data);
+      return data.cars[index];
+    }
+
+    return { id, ...updates } as Car;
   },
 
   async deleteCarAsync(id: string): Promise<boolean> {
@@ -760,9 +760,8 @@ export const db = {
     data.cars = data.cars.filter(c => c.id !== id);
     if (data.cars.length !== initialLength) {
       saveDb(data);
-      return true;
     }
-    return false;
+    return true;
   },
 
   // Synchronous Car fallbacks for backward compatibility
