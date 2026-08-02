@@ -1,10 +1,20 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export async function GET() {
   try {
     const gallery = db.getGallery();
-    return NextResponse.json({ success: true, data: gallery });
+    return NextResponse.json(
+      { success: true, data: gallery },
+      {
+        headers: {
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+        },
+      }
+    );
   } catch (error) {
     return NextResponse.json({ success: false, message: 'Failed to fetch gallery' }, { status: 500 });
   }
@@ -38,6 +48,6 @@ export async function DELETE(request: Request) {
     const deleted = db.deleteGalleryItem(id);
     return NextResponse.json({ success: deleted, message: deleted ? 'Deleted' : 'Not found' });
   } catch (error) {
-    return NextResponse.json({ success: false, message: 'Failed to delete item' }, { status: 500 });
+    return NextResponse.json({ success: false, message: 'Failed to delete gallery item' }, { status: 500 });
   }
 }
