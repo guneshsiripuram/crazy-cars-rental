@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import { Car, Booking, WebsiteSettings, GalleryItem } from './types';
+import { supabase } from './supabase';
 
 const DATA_DIR = path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DATA_DIR, 'db.json');
@@ -582,7 +583,159 @@ export const db = {
     return ensureDbExists();
   },
 
-  // Cars
+  // Async Supabase-integrated Cars
+  async getCarsAsync(): Promise<Car[]> {
+    if (supabase) {
+      try {
+        const { data, error } = await supabase.from('cars').select('*');
+        if (!error && data && data.length > 0) {
+          // Map DB columns to Car type
+          const mappedCars: Car[] = data.map(item => ({
+            id: item.id || `car-${Date.now()}`,
+            name: item.name,
+            brand: item.brand,
+            model: item.model,
+            type: item.type,
+            fuel: item.fuel,
+            transmission: item.transmission,
+            seats: Number(item.seats) || 5,
+            mileage: item.mileage || '20.0 km/l',
+            priceHour: Number(item.price_hour) || 150,
+            priceDay: Number(item.price_day) || 2500,
+            price12hr: Number(item.price_12hr) || 1600,
+            price24hr: Number(item.price_24hr) || 2600,
+            kmLimit12hr: Number(item.km_limit_12hr) || 150,
+            kmLimit24hr: Number(item.km_limit_24hr) || 250,
+            excessKmRate: Number(item.excess_km_rate) || 6,
+            extraHrRate: Number(item.extra_hr_rate) || 170,
+            priceWeek: Number(item.price_week) || 16000,
+            priceMonth: Number(item.price_month) || 52000,
+            image: item.image || item.image_url || 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1200&auto=format&fit=crop',
+            status: item.status || 'Available',
+            enabled: item.enabled !== false,
+            featured: Boolean(item.featured)
+          }));
+
+          // Sync to memory
+          const localData = ensureDbExists();
+          localData.cars = mappedCars;
+          saveDb(localData);
+          return mappedCars;
+        }
+      } catch (err) {
+        console.error('Supabase getCarsAsync error:', err);
+      }
+    }
+
+    return ensureDbExists().cars;
+  },
+
+  async addCarAsync(car: Omit<Car, 'id'>): Promise<Car> {
+    const newCar: Car = {
+      ...car,
+      id: `car-${Date.now()}`
+    };
+
+    if (supabase) {
+      try {
+        await supabase.from('cars').insert([{
+          id: newCar.id,
+          name: newCar.name,
+          brand: newCar.brand,
+          model: newCar.model,
+          type: newCar.type,
+          fuel: newCar.fuel,
+          transmission: newCar.transmission,
+          seats: newCar.seats,
+          mileage: newCar.mileage,
+          price_hour: newCar.priceHour,
+          price_day: newCar.priceDay,
+          price_12hr: newCar.price12hr || 1600,
+          price_24hr: newCar.price24hr || 2600,
+          km_limit_12hr: newCar.kmLimit12hr || 150,
+          km_limit_24hr: newCar.kmLimit24hr || 250,
+          excess_km_rate: newCar.excessKmRate || 6,
+          extra_hr_rate: newCar.extraHrRate || 170,
+          price_week: newCar.priceWeek,
+          price_month: newCar.priceMonth,
+          image: newCar.image,
+          status: newCar.status,
+          enabled: newCar.enabled,
+          featured: newCar.featured || false
+        }]);
+      } catch (err) {
+        console.error('Supabase addCarAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    data.cars.unshift(newCar);
+    saveDb(data);
+    return newCar;
+  },
+
+  async updateCarAsync(id: string, updates: Partial<Car>): Promise<Car | null> {
+    const data = ensureDbExists();
+    const index = data.cars.findIndex(c => c.id === id);
+    if (index === -1) return null;
+
+    data.cars[index] = { ...data.cars[index], ...updates };
+    const updatedCar = data.cars[index];
+
+    if (supabase) {
+      try {
+        const payload: Record<string, any> = {};
+        if (updates.name !== undefined) payload.name = updates.name;
+        if (updates.brand !== undefined) payload.brand = updates.brand;
+        if (updates.model !== undefined) payload.model = updates.model;
+        if (updates.type !== undefined) payload.type = updates.type;
+        if (updates.fuel !== undefined) payload.fuel = updates.fuel;
+        if (updates.transmission !== undefined) payload.transmission = updates.transmission;
+        if (updates.seats !== undefined) payload.seats = updates.seats;
+        if (updates.mileage !== undefined) payload.mileage = updates.mileage;
+        if (updates.priceHour !== undefined) payload.price_hour = updates.priceHour;
+        if (updates.priceDay !== undefined) payload.price_day = updates.priceDay;
+        if (updates.price12hr !== undefined) payload.price_12hr = updates.price12hr;
+        if (updates.price24hr !== undefined) payload.price_24hr = updates.price24hr;
+        if (updates.excessKmRate !== undefined) payload.excess_km_rate = updates.excessKmRate;
+        if (updates.extraHrRate !== undefined) payload.extra_hr_rate = updates.extraHrRate;
+        if (updates.priceWeek !== undefined) payload.price_week = updates.priceWeek;
+        if (updates.priceMonth !== undefined) payload.price_month = updates.priceMonth;
+        if (updates.image !== undefined) payload.image = updates.image;
+        if (updates.status !== undefined) payload.status = updates.status;
+        if (updates.enabled !== undefined) payload.enabled = updates.enabled;
+        if (updates.featured !== undefined) payload.featured = updates.featured;
+
+        await supabase.from('cars').update(payload).eq('id', id);
+      } catch (err) {
+        console.error('Supabase updateCarAsync error:', err);
+      }
+    }
+
+    saveDb(data);
+    return updatedCar;
+  },
+
+  async deleteCarAsync(id: string): Promise<boolean> {
+    if (supabase) {
+      try {
+        await supabase.from('cars').delete().eq('id', id);
+      } catch (err) {
+        console.error('Supabase deleteCarAsync error:', err);
+      }
+    }
+
+    const data = ensureDbExists();
+    const initialLength = data.cars.length;
+    data.cars = data.cars.filter(c => c.id !== id);
+    if (data.cars.length !== initialLength) {
+      saveDb(data);
+      return true;
+    }
+    return false;
+  },
+
+  // Synchronous Car fallbacks for backward compatibility
   getCars(): Car[] {
     return ensureDbExists().cars;
   },
