@@ -65,7 +65,7 @@ export default function LiveVehicleTicker({ cars, onSelectCar }: LiveVehicleTick
   };
 
   return (
-    <section className="py-7 bg-slate-900 text-white relative border-y border-slate-800 shadow-2xl overflow-hidden">
+    <section className="pt-24 sm:pt-28 pb-7 bg-slate-900 text-white relative border-b border-slate-800 shadow-2xl overflow-hidden">
       
       {/* Background Subtle Grid */}
       <div className="absolute inset-0 opacity-15 bg-[radial-gradient(#2563EB_1px,transparent_1px)] [background-size:20px_20px] pointer-events-none" />

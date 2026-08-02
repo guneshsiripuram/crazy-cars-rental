@@ -129,16 +129,16 @@ export default function HomePage() {
       {/* Main Content Sections */}
       <main className="flex-grow">
         
+        {/* Live Vehicle Scrolling Ticker at Front-View Top */}
+        <LiveVehicleTicker
+          cars={cars}
+          onSelectCar={(car) => handleOpenBookingModal(car)}
+        />
+
         {/* Hero Section */}
         <Hero
           settings={settings}
           onOpenBookingModal={() => handleOpenBookingModal()}
-        />
-
-        {/* Live Vehicle Scrolling Ticker */}
-        <LiveVehicleTicker
-          cars={cars}
-          onSelectCar={(car) => handleOpenBookingModal(car)}
         />
 
         {/* Why Choose Us */}

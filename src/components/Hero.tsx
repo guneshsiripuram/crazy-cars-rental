@@ -14,7 +14,7 @@ export default function Hero({ settings, onOpenBookingModal }: HeroProps) {
   const whatsappUrl = `https://wa.me/91${settings.whatsapp}?text=${encodeURIComponent('Hello Crazy Cars, I would like to rent a self drive car in Visakhapatnam.')}`;
 
   return (
-    <section id="hero" className="relative pt-28 pb-16 md:pt-36 md:pb-24 overflow-hidden bg-white">
+    <section id="hero" className="relative pt-10 pb-14 md:pt-14 md:pb-20 overflow-hidden bg-white">
       {/* Background Subtle Grid Pattern */}
       <div className="absolute inset-0 opacity-[0.03] bg-[radial-gradient(#0F172A_1px,transparent_1px)] [background-size:16px_16px] pointer-events-none" />
 
