@@ -46,3 +46,17 @@ body {
   background: rgba(248, 250, 252, 0.95);
   backdrop-filter: blur(8px);
 }
+
+/* Infinite Horizontal Marquee Ticker */
+@keyframes ticker {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-ticker {
+  animation: ticker 35s linear infinite;
+}

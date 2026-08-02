@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '@/components/Navbar';
 import Hero from '@/components/Hero';
+import LiveVehicleTicker from '@/components/LiveVehicleTicker';
 import WhyChooseUs from '@/components/WhyChooseUs';
 import FleetSection from '@/components/FleetSection';
 import BookingModal from '@/components/BookingModal';
@@ -132,6 +133,12 @@ export default function HomePage() {
         <Hero
           settings={settings}
           onOpenBookingModal={() => handleOpenBookingModal()}
+        />
+
+        {/* Live Vehicle Scrolling Ticker */}
+        <LiveVehicleTicker
+          cars={cars}
+          onSelectCar={(car) => handleOpenBookingModal(car)}
         />
 
         {/* Why Choose Us */}
