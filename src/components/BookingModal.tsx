@@ -57,6 +57,24 @@ export default function BookingModal({
       return;
     }
 
+    const todayStr = new Date().toISOString().split('T')[0];
+    const phoneClean = phone.trim().replace(/\D/g, '');
+
+    if (!/^[6-9]\d{9}$/.test(phoneClean)) {
+      setErrorMsg('Please enter a valid 10-digit mobile number starting with 6, 7, 8, or 9.');
+      return;
+    }
+
+    if (pickupDate < todayStr) {
+      setErrorMsg('Pickup date cannot be in the past.');
+      return;
+    }
+
+    if (returnDate < pickupDate) {
+      setErrorMsg('Return date must be on or after pickup date.');
+      return;
+    }
+
     setLoading(true);
     setErrorMsg('');
 

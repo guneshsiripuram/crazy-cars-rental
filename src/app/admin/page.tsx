@@ -67,9 +67,10 @@ export default function AdminDashboardPage() {
   // Form State for Car
   const [carForm, setCarForm] = useState({
     name: '', brand: '', model: '', type: 'Hatchback' as CarType, fuel: 'Petrol' as FuelType,
-    transmission: 'Manual' as TransmissionType, seats: 5, mileage: '20 km/l',
-    priceHour: 150, priceDay: 1200, priceWeek: 7500, priceMonth: 26000,
-    image: '', status: 'Available' as CarStatus, enabled: true
+    transmission: 'Manual' as TransmissionType, seats: 5, mileage: '20.0 km/l',
+    priceHour: 150, priceDay: 2600, price12hr: 1600, price24hr: 2600, kmLimit12hr: 150, kmLimit24hr: 250,
+    excessKmRate: 6, extraHrRate: 170, priceWeek: 16000, priceMonth: 52000,
+    image: '', status: 'Available' as CarStatus, enabled: true, featured: false
   });
 
   // Gallery Modal State
@@ -156,17 +157,26 @@ export default function AdminDashboardPage() {
       setCarForm({
         name: car.name, brand: car.brand, model: car.model, type: car.type,
         fuel: car.fuel, transmission: car.transmission, seats: car.seats, mileage: car.mileage,
-        priceHour: car.priceHour, priceDay: car.priceDay, priceWeek: car.priceWeek, priceMonth: car.priceMonth,
-        image: car.image, status: car.status, enabled: car.enabled
+        priceHour: car.priceHour, priceDay: car.priceDay,
+        price12hr: car.price12hr || (car.priceHour * 12),
+        price24hr: car.price24hr || car.priceDay,
+        kmLimit12hr: car.kmLimit12hr || 150,
+        kmLimit24hr: car.kmLimit24hr || 250,
+        excessKmRate: car.excessKmRate || 6,
+        extraHrRate: car.extraHrRate || 170,
+        priceWeek: car.priceWeek, priceMonth: car.priceMonth,
+        image: car.image, status: car.status, enabled: car.enabled, featured: Boolean(car.featured)
       });
     } else {
       setEditingCar(null);
       setCarForm({
         name: '', brand: 'Maruti Suzuki', model: '', type: 'Hatchback', fuel: 'Petrol',
         transmission: 'Manual', seats: 5, mileage: '20.0 km/l',
-        priceHour: 150, priceDay: 1200, priceWeek: 7500, priceMonth: 26000,
+        priceHour: 150, priceDay: 2600, price12hr: 1600, price24hr: 2600,
+        kmLimit12hr: 150, kmLimit24hr: 250, excessKmRate: 6, extraHrRate: 170,
+        priceWeek: 16000, priceMonth: 52000,
         image: 'https://images.unsplash.com/photo-1549399542-7e3f8b79c341?q=80&w=1200&auto=format&fit=crop',
-        status: 'Available', enabled: true
+        status: 'Available', enabled: true, featured: false
       });
     }
     setCarModalOpen(true);
@@ -1007,6 +1017,7 @@ export default function AdminDashboardPage() {
                     <option value="Hatchback">Hatchback</option>
                     <option value="Sedan">Sedan</option>
                     <option value="SUV">SUV / MPV</option>
+                    <option value="Luxury">Luxury</option>
                   </select>
                 </div>
               </div>
@@ -1021,6 +1032,8 @@ export default function AdminDashboardPage() {
                   >
                     <option value="Petrol">Petrol</option>
                     <option value="Diesel">Diesel</option>
+                    <option value="EV">EV</option>
+                    <option value="Hybrid">Hybrid</option>
                   </select>
                 </div>
                 <div>
@@ -1041,6 +1054,45 @@ export default function AdminDashboardPage() {
                     onChange={e => setCarForm({...carForm, seats: Number(e.target.value)})}
                     className="w-full p-2.5 bg-slate-50 border border-border rounded-xl"
                   />
+                </div>
+              </div>
+
+              {/* Official Rate Sheet Rates */}
+              <div className="p-3 bg-blue-50/70 border border-blue-100 rounded-2xl space-y-3">
+                <p className="text-[11px] font-extrabold uppercase text-primary tracking-wider">Official Rate Sheet Pricing</p>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  <div>
+                    <label className="block font-bold text-secondary text-[11px] mb-1">12 HRS Rate (₹)</label>
+                    <input
+                      type="number" value={carForm.price12hr}
+                      onChange={e => setCarForm({...carForm, price12hr: Number(e.target.value)})}
+                      className="w-full p-2 bg-white border border-blue-200 rounded-xl font-bold text-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-secondary text-[11px] mb-1">24 HRS Rate (₹)</label>
+                    <input
+                      type="number" value={carForm.price24hr}
+                      onChange={e => setCarForm({...carForm, price24hr: Number(e.target.value)})}
+                      className="w-full p-2 bg-white border border-blue-200 rounded-xl font-bold text-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-secondary text-[11px] mb-1">Excess KM (₹/km)</label>
+                    <input
+                      type="number" value={carForm.excessKmRate}
+                      onChange={e => setCarForm({...carForm, excessKmRate: Number(e.target.value)})}
+                      className="w-full p-2 bg-white border border-blue-200 rounded-xl font-bold text-slate-700"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-secondary text-[11px] mb-1">Extra Hour (₹/hr)</label>
+                    <input
+                      type="number" value={carForm.extraHrRate}
+                      onChange={e => setCarForm({...carForm, extraHrRate: Number(e.target.value)})}
+                      className="w-full p-2 bg-white border border-blue-200 rounded-xl font-bold text-slate-700"
+                    />
+                  </div>
                 </div>
               </div>
 
@@ -1077,6 +1129,19 @@ export default function AdminDashboardPage() {
                     className="w-full p-2 bg-slate-50 border border-border rounded-xl font-bold text-primary"
                   />
                 </div>
+              </div>
+
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="featuredToggle"
+                  checked={carForm.featured}
+                  onChange={e => setCarForm({...carForm, featured: e.target.checked})}
+                  className="w-4 h-4 text-primary rounded focus:ring-primary"
+                />
+                <label htmlFor="featuredToggle" className="text-xs font-bold text-slate-800 cursor-pointer">
+                  Feature this vehicle on top ticker & homepage highlights
+                </label>
               </div>
 
               <div>

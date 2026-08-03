@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 
 export const metadata: Metadata = {
+  metadataBase: new URL('https://crazy-cars-rental.vercel.app'),
   title: 'Crazy Cars Self Drive Rental | Visakhapatnam | Reliable Self Drive Cars',
   description: 'Premium self-drive car rental service providing clean, well-maintained, affordable cars in Visakhapatnam for daily, weekly, monthly and hourly rentals. Call 7337422124.',
   keywords: 'Crazy Cars Self Drive Rental, Self Drive Cars Visakhapatnam, Car Rental Gajuwaka, Hire Swift Vizag, Hire Fortuner Vizag, Self drive car Vizag',
@@ -9,7 +10,7 @@ export const metadata: Metadata = {
   openGraph: {
     title: 'Crazy Cars Self Drive Rental - Visakhapatnam',
     description: 'Rent clean & sanitized self-drive cars in Visakhapatnam. Swift, i20, Dzire, Thar, Fortuner, Creta & Innova. Hourly, daily & monthly rates.',
-    url: 'https://crazycars.com',
+    url: 'https://crazy-cars-rental.vercel.app',
     siteName: 'Crazy Cars Self Drive Rental',
     images: [
       {
@@ -42,7 +43,7 @@ export default function RootLayout({
   return (
     <html lang="en" className="scroll-smooth">
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
+        <link rel="icon" href="/logo.png" sizes="any" />
       </head>
       <body className="antialiased selection:bg-blue-600/20 selection:text-blue-600">
         {children}
