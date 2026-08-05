@@ -129,19 +129,23 @@ export default function AdminDashboardPage() {
     setIsAuthenticated(false);
   };
 
-  const authHeaders = {
-    'Content-Type': 'application/json',
-    'Authorization': 'Bearer crazy-cars-admin-token-2026'
+  const getAuthHeaders = () => {
+    const token = typeof window !== 'undefined' ? localStorage.getItem('crazy_cars_admin_token') || '' : '';
+    return {
+      'Content-Type': 'application/json',
+      'Authorization': `Bearer ${token}`
+    };
   };
 
   const fetchAllData = async () => {
     setLoading(true);
     try {
+      const headers = getAuthHeaders();
       const [carsRes, bookingsRes, settingsRes, galleryRes] = await Promise.all([
-        fetch('/api/cars', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
-        fetch('/api/bookings', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
-        fetch('/api/settings', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
-        fetch('/api/gallery', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
+        fetch('/api/cars', { headers }).then(r => r.json()),
+        fetch('/api/bookings', { headers }).then(r => r.json()),
+        fetch('/api/settings', { headers }).then(r => r.json()),
+        fetch('/api/gallery', { headers }).then(r => r.json()),
       ]);
 
       if (carsRes.success) setCars(carsRes.data);
@@ -196,7 +200,7 @@ export default function AdminDashboardPage() {
 
       const res = await fetch(endpoint, {
         method,
-        headers: authHeaders,
+        headers: getAuthHeaders(),
         body: JSON.stringify(payload),
       });
 
@@ -218,7 +222,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch(`/api/cars?id=${id}`, {
         method: 'DELETE',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success) {
@@ -236,7 +240,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/cars', {
         method: 'PUT',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
         body: JSON.stringify({ id: carId, status: newStatus }),
       });
       const data = await res.json();
@@ -255,7 +259,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/cars', {
         method: 'PUT',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
         body: JSON.stringify({ id: car.id, enabled: !car.enabled }),
       });
       const data = await res.json();
@@ -275,7 +279,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/bookings', {
         method: 'PATCH',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
         body: JSON.stringify({ id, status: newStatus }),
       });
       const data = await res.json();
@@ -296,7 +300,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/settings', {
         method: 'PUT',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
         body: JSON.stringify(settings),
       });
       const data = await res.json();
@@ -316,7 +320,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/gallery', {
         method: 'POST',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
         body: JSON.stringify(galleryForm),
       });
       const data = await res.json();
@@ -338,7 +342,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch(`/api/gallery?id=${id}`, {
         method: 'DELETE',
-        headers: authHeaders,
+        headers: getAuthHeaders(),
       });
       const data = await res.json();
       if (data.success) {
