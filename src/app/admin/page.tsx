@@ -129,14 +129,19 @@ export default function AdminDashboardPage() {
     setIsAuthenticated(false);
   };
 
+  const authHeaders = {
+    'Content-Type': 'application/json',
+    'Authorization': 'Bearer crazy-cars-admin-token-2026'
+  };
+
   const fetchAllData = async () => {
     setLoading(true);
     try {
       const [carsRes, bookingsRes, settingsRes, galleryRes] = await Promise.all([
-        fetch('/api/cars').then(r => r.json()),
-        fetch('/api/bookings').then(r => r.json()),
-        fetch('/api/settings').then(r => r.json()),
-        fetch('/api/gallery').then(r => r.json()),
+        fetch('/api/cars', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
+        fetch('/api/bookings', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
+        fetch('/api/settings', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
+        fetch('/api/gallery', { headers: { 'Authorization': 'Bearer crazy-cars-admin-token-2026' } }).then(r => r.json()),
       ]);
 
       if (carsRes.success) setCars(carsRes.data);
@@ -191,7 +196,7 @@ export default function AdminDashboardPage() {
 
       const res = await fetch(endpoint, {
         method,
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify(payload),
       });
 
@@ -200,6 +205,8 @@ export default function AdminDashboardPage() {
         showFeedback(editingCar ? 'Car updated successfully!' : 'New car added to fleet!');
         setCarModalOpen(false);
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Failed to save car');
       }
     } catch (err) {
       showFeedback('Failed to save car');
@@ -209,11 +216,16 @@ export default function AdminDashboardPage() {
   const handleDeleteCar = async (id: string, name: string) => {
     if (!confirm(`Are you sure you want to delete ${name}?`)) return;
     try {
-      const res = await fetch(`/api/cars?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/cars?id=${id}`, {
+        method: 'DELETE',
+        headers: authHeaders,
+      });
       const data = await res.json();
       if (data.success) {
         showFeedback('Car deleted successfully');
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Error deleting car');
       }
     } catch {
       showFeedback('Error deleting car');
@@ -224,13 +236,15 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/cars', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({ id: carId, status: newStatus }),
       });
       const data = await res.json();
       if (data.success) {
         showFeedback(`Car status updated to ${newStatus}`);
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Failed to update status');
       }
     } catch {
       showFeedback('Failed to update status');
@@ -241,13 +255,15 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/cars', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({ id: car.id, enabled: !car.enabled }),
       });
       const data = await res.json();
       if (data.success) {
         showFeedback(`Car online booking ${!car.enabled ? 'Enabled' : 'Disabled'}`);
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Failed to toggle car state');
       }
     } catch {
       showFeedback('Failed to toggle car state');
@@ -259,13 +275,15 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/bookings', {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify({ id, status: newStatus }),
       });
       const data = await res.json();
       if (data.success) {
         showFeedback(`Booking enquiry updated to ${newStatus}`);
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Failed to update booking status');
       }
     } catch {
       showFeedback('Failed to update booking status');
@@ -278,12 +296,14 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/settings', {
         method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify(settings),
       });
       const data = await res.json();
       if (data.success) {
         showFeedback('Website settings updated! Customer website updated live.');
+      } else {
+        showFeedback(data.message || 'Failed to save settings');
       }
     } catch {
       showFeedback('Failed to save settings');
@@ -296,7 +316,7 @@ export default function AdminDashboardPage() {
     try {
       const res = await fetch('/api/gallery', {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: authHeaders,
         body: JSON.stringify(galleryForm),
       });
       const data = await res.json();
@@ -305,6 +325,8 @@ export default function AdminDashboardPage() {
         setGalleryModalOpen(false);
         setGalleryForm({ title: '', category: 'Fleet', imageUrl: '' });
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Failed to add gallery item');
       }
     } catch {
       showFeedback('Failed to add gallery item');
@@ -314,11 +336,16 @@ export default function AdminDashboardPage() {
   const handleDeleteGalleryItem = async (id: string) => {
     if (!confirm('Delete this image from gallery?')) return;
     try {
-      const res = await fetch(`/api/gallery?id=${id}`, { method: 'DELETE' });
+      const res = await fetch(`/api/gallery?id=${id}`, {
+        method: 'DELETE',
+        headers: authHeaders,
+      });
       const data = await res.json();
       if (data.success) {
         showFeedback('Gallery image deleted');
         fetchAllData();
+      } else {
+        showFeedback(data.message || 'Failed to delete gallery item');
       }
     } catch {
       showFeedback('Failed to delete gallery item');

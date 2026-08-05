@@ -1,5 +1,6 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
+import { isAuthorizedAdmin } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
@@ -22,6 +23,9 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    if (!isAuthorizedAdmin(request)) {
+      return NextResponse.json({ success: false, message: 'Unauthorized. Admin authorization required.' }, { status: 401 });
+    }
     const body = await request.json();
     const updated = await db.updateSettingsAsync(body);
     return NextResponse.json({ success: true, data: updated });

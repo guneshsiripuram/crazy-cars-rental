@@ -74,8 +74,8 @@ export default function HomePage() {
     '@type': 'AutoRental',
     'name': 'Crazy Cars Self Drive Rental',
     'image': 'https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1200&auto=format&fit=crop',
-    '@id': 'https://crazycars.com',
-    'url': 'https://crazycars.com',
+    '@id': 'https://crazy-cars-rental.vercel.app',
+    'url': 'https://crazy-cars-rental.vercel.app',
     'telephone': `+91-${settings.phone}`,
     'priceRange': '₹150 - ₹6000',
     'address': {

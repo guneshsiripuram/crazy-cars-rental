@@ -1,12 +1,16 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
 import { Booking } from '@/lib/types';
+import { isAuthorizedAdmin } from '@/lib/auth';
 
 export const dynamic = 'force-dynamic';
 export const revalidate = 0;
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
+    if (!isAuthorizedAdmin(request)) {
+      return NextResponse.json({ success: false, message: 'Unauthorized. Admin token required to access customer booking PII.' }, { status: 401 });
+    }
     const bookings = await db.getBookingsAsync();
     return NextResponse.json(
       { success: true, data: bookings },
@@ -48,6 +52,10 @@ export async function POST(request: Request) {
 
 async function updateBookingHandler(request: Request) {
   try {
+    if (!isAuthorizedAdmin(request)) {
+      return NextResponse.json({ success: false, message: 'Unauthorized. Admin authorization required.' }, { status: 401 });
+    }
+
     const body = await request.json();
     const { id, status } = body;
 
