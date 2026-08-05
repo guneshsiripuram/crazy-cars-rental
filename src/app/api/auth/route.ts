@@ -1,26 +1,23 @@
 import { NextResponse } from 'next/server';
-import { ADMIN_SECRET } from '@/lib/auth';
+import { createSessionToken } from '@/lib/auth';
 
-export async function POST(request: Request) {
+export async function POST(req: Request) {
   try {
-    const body = await request.json().catch(() => null);
-    
+    const body = await req.json().catch(() => null);
     if (!body || typeof body.password !== 'string') {
       return NextResponse.json({ success: false, message: 'Password is required' }, { status: 400 });
     }
 
-    const { password } = body;
-
-    // Admin PIN check
-    if (password === '182026') {
-      return NextResponse.json({
-        success: true,
-        token: ADMIN_SECRET
-      });
+    const adminPin = process.env.ADMIN_PIN || '182026';
+    if (body.password !== adminPin) {
+      return NextResponse.json({ success: false, message: 'Invalid admin credentials' }, { status: 401 });
     }
 
-    return NextResponse.json({ success: false, message: 'Invalid admin credentials' }, { status: 401 });
-  } catch (error) {
+    return NextResponse.json({
+      success: true,
+      token: createSessionToken()
+    });
+  } catch {
     return NextResponse.json({ success: false, message: 'Invalid admin credentials' }, { status: 401 });
   }
 }

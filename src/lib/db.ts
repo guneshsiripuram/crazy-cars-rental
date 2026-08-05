@@ -377,7 +377,7 @@ const INITIAL_CARS: Car[] = [
     extraHrRate: 350,
     priceWeek: 28000,
     priceMonth: 95000,
-    image: 'https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?q=80&w=1200&auto=format&fit=crop',
+    image: 'https://pxumlqtlyfkhehhtsdwp.supabase.co/storage/v1/object/public/crazy-cars-images/innova-crysta.jpg',
     status: 'Available',
     enabled: true,
     featured: true

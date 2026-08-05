@@ -83,18 +83,36 @@ export default function AdminDashboardPage() {
   const [feedbackMsg, setFeedbackMsg] = useState('');
 
   useEffect(() => {
-    // Check local storage for session
-    const token = localStorage.getItem('crazy_cars_admin_token');
-    if (token === 'crazy-cars-admin-token-2026') {
-      setIsAuthenticated(true);
-      fetchAllData();
+    let interval: NodeJS.Timeout;
+    const checkServerAuth = async () => {
+      const token = localStorage.getItem('crazy_cars_admin_token');
+      if (!token) return;
 
-      // Auto refresh every 15 seconds for live enquiries
-      const interval = setInterval(() => {
-        fetchAllData();
-      }, 15000);
-      return () => clearInterval(interval);
-    }
+      try {
+        const res = await fetch('/api/bookings', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (res.ok) {
+          setIsAuthenticated(true);
+          fetchAllData();
+
+          interval = setInterval(() => {
+            fetchAllData();
+          }, 15000);
+        } else {
+          localStorage.removeItem('crazy_cars_admin_token');
+          setIsAuthenticated(false);
+        }
+      } catch {
+        localStorage.removeItem('crazy_cars_admin_token');
+        setIsAuthenticated(false);
+      }
+    };
+
+    checkServerAuth();
+    return () => {
+      if (interval) clearInterval(interval);
+    };
   }, []);
 
   const showFeedback = (msg: string) => {

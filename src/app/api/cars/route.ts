@@ -1,9 +1,8 @@
 import { NextResponse } from 'next/server';
 import { db } from '@/lib/db';
-import { isAuthorizedAdmin } from '@/lib/auth';
+import { requireAdmin } from '@/lib/requireAdmin';
 
 export const dynamic = 'force-dynamic';
-export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -12,7 +11,7 @@ export async function GET() {
       { success: true, data: cars },
       {
         headers: {
-          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
+          'Cache-Control': 'public, max-age=60, s-maxage=300',
         },
       }
     );
@@ -23,9 +22,9 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
-    if (!isAuthorizedAdmin(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized. Admin authorization required.' }, { status: 401 });
-    }
+    const denied = requireAdmin(request);
+    if (denied) return denied;
+
     const body = await request.json();
     const newCar = await db.addCarAsync(body);
     return NextResponse.json({ success: true, data: newCar }, { status: 201 });
@@ -36,9 +35,9 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
-    if (!isAuthorizedAdmin(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized. Admin authorization required.' }, { status: 401 });
-    }
+    const denied = requireAdmin(request);
+    if (denied) return denied;
+
     const body = await request.json();
     const { id, ...updates } = body;
     if (!id) {
@@ -56,9 +55,9 @@ export async function PUT(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
-    if (!isAuthorizedAdmin(request)) {
-      return NextResponse.json({ success: false, message: 'Unauthorized. Admin authorization required.' }, { status: 401 });
-    }
+    const denied = requireAdmin(request);
+    if (denied) return denied;
+
     const { searchParams } = new URL(request.url);
     const id = searchParams.get('id');
     if (!id) {
