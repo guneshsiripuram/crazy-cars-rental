@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 import { requireAdmin } from '@/lib/requireAdmin';
 
 export const dynamic = 'force-dynamic';
+export const revalidate = 0;
 
 export async function GET() {
   try {
@@ -11,7 +12,7 @@ export async function GET() {
       { success: true, data: cars },
       {
         headers: {
-          'Cache-Control': 'public, max-age=60, s-maxage=300',
+          'Cache-Control': 'no-store, no-cache, must-revalidate, proxy-revalidate',
         },
       }
     );

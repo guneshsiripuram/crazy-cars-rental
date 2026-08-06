@@ -593,7 +593,7 @@ export const db = {
           const mappedCars: Car[] = data.map(item => ({
             id: item.id || `car-${Date.now()}`,
             name: item.name,
-            brand: item.brand,
+            brand: item.name?.toLowerCase().includes('kwid') ? 'Renault' : (item.brand || 'Maruti Suzuki'),
             model: item.model,
             type: item.type,
             fuel: item.fuel,
